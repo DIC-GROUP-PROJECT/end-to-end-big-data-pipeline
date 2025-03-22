@@ -1,6 +1,8 @@
 # 0. Install
+
 Make sure you have docker installed on your own computer.
-[](https://docs.docker.com/get-started/get-docker/ )
+[](https://docs.docker.com/get-started/get-docker/)
+
 # 1. How to start the Hadoop Cluster
 
 ```bash
@@ -81,11 +83,9 @@ docker exec -it <your namenode container name> bash
 java -jar app-all.jar
 ```
 
-
 # 4. Spark Example
 
 Create a python file by using `vi spark.py`. If you don't know what `vi` is, please refer to this [online course](https://missing.csail.mit.edu/2020/editors/)
-
 
 ```python
 from pyspark import SparkConf, SparkContext
@@ -117,6 +117,21 @@ And you can run this by `./spark/bin/spark-submit  --master yarn   --deploy-mode
 
 If you success, you can check the result in `/output/wordcount_result`
 
+---
 
+# How to Use Sushrut's Environment?
 
+Follow these steps:
 
+1. Navigate into the root directory (directory where `environment.yml` file is present) using Anaconda prompt.
+2. Run the following command:
+
+   ```{bash}
+   conda create -p ./venv --file environment.yml
+   ```
+
+3. Once created, activate the environment using the following command (staying in the same root directory):
+
+   ```{bash}
+   conda activate ./venv
+   ```
