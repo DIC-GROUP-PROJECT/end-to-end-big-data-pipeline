@@ -1,3 +1,4 @@
 .gradle
-
 build
+venv
+.ipynb_checkpoints
