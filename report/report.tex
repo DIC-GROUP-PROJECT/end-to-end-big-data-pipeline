@@ -16,11 +16,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Yelp Data Analysis%\\
-% {\footnotesize \textsuperscript{*}Note: Sub-titles are not captured for https://ieeexplore.ieee.org  and
-% should not be used}
-% \thanks{Identify applicable funding agency here. If none, delete this.}
-}
+\title{Yelp Data Analysis - Phase I}
 
 \author{\IEEEauthorblockN{Aayushi Pandey}
 \IEEEauthorblockA{\textit{SEAS} \\
@@ -39,258 +35,703 @@ Buffalo, NY, USA \\
 \textit{University at Buffalo}\\
 Buffalo, NY, USA \\
 \href{mailto:sushruti@buffalo.edu}{sushruti@buffalo.edu}}
-% \and
-% \IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
-% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-% \textit{name of organization (of Aff.)}\\
-% City, Country \\
-% email address or ORCID}
-% \and
-% \IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
-% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-% \textit{name of organization (of Aff.)}\\
-% City, Country \\
-% email address or ORCID}
-% \and
-% \IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
-% \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-% \textit{name of organization (of Aff.)}\\
-% City, Country \\
-% email address or ORCID}
 }
 
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+This project focuses on building a big data pipeline using the Yelp Open Dataset,
+which contains data about millions of reviews, business records, users, tips, and
+checkins. In the first phase, we set up a Hadoop cluster and implement a Java-based
+script to ingest the data. After ingestion, we carried out exploratory data analysis
+using Python and pandas to uncover patterns in the data. We also identify three
+potential machine learning use cases that can be solved using this data: sentiment
+analysis of reviews, personalized recommendation system, and fake review detection.
+Additionally, we defined five data analysis objectives to guide our exploratory
+work. These early steps help lay the foundation for deeper modeling and insights
+in later phases of the project.
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert.
+Hadoop, Yelp Dataset, Data Ingestion, Exploratory Data Analysis, Machine Learning
 \end{IEEEkeywords}
 
 \section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits. For more information about how to become an IEEE Conference author or how to write your paper, please visit   IEEE Conference Author Center website: https://conferences.ieeeauthorcenter.ieee.org/.
+Yelp is a popular online application that publishes crowd-sourced reviews about
+businesses. Users can leave reviews, ratings, and tips about local businesses,
+making it a rich source of large real-world data. Analyzing this data can reveal
+insights about user preferences, business trends, regional patterns, and more.
+However, working with such a large dataset calls for tools and systems that can
+handle scale.
 
-\subsection{Maintaining the Integrity of the Specifications}
+Our project aims to build a complete end-to-end big data pipeline to process and
+analyze the Yelp Open Dataset. In this first phase, we focused on setting up the
+infrastructure and preparing the data for analysis. We created a Hadoop cluster
+on our local machine and wrote a Java-based script to ingest the data into the Hadoop
+Distributed File System (HDFS). In parallel, we used Python and the pandas library
+to carry out exploratory data analysis (EDA) to get familiar with the structure
+of the data and uncover the basic trends.
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.
+In addition, we also outlined three potential machine learning problems: review
+sentiment classification, recommendation systems, and fake review detection. We
+also defined five data analysis objectives to study user behavior, business
+popularity, and geographic patterns. These tasks gave us a better
+understanding of the dataset and also set the direction for future phases, where
+we plan to implement the machine learning methods and advanced analytics.
 
-\section{Prepare Your Paper Before Styling}
-Before you begin to format your paper, first write and save the content as a 
-separate text file. Complete all content and organizational editing before 
-formatting. Please note sections \ref{AA} to \ref{FAT} below for more information on 
-proofreading, spelling and grammar.
+\section{Dataset Description}
 
-Keep your text and graphic files separate until after the text has been 
-formatted and styled. Do not number text heads---{\LaTeX} will do that 
-for you.
+As mentioned earlier, we are using the \href{https://business.yelp.com/data/resources/open-dataset/}{Yelp Open Dataset},
+a publicly available collection of user generated data shared by Yelp for academic
+purposes. It is a rich source of real-world data involving users, businesses, reviews,
+and more. It is especially suitable for building end-to-end big data pipelines
+and building machine learning models due to its size, structure, and variety.
 
-\subsection{Abbreviations and Acronyms}\label{AA}
-Define abbreviations and acronyms the first time they are used in the text, 
-even after they have been defined in the abstract. Abbreviations such as 
-IEEE, SI, MKS, CGS, ac, dc, and rms do not have to be defined. Do not use 
-abbreviations in the title or heads unless they are unavoidable.
+\subsection{Individual Datasets}
 
-\subsection{Units}
+The data is in the form of JSON files. The five main JSON files are the following:
 \begin{itemize}
-\item Use either SI (MKS) or CGS as primary units. (SI units are encouraged.) English units may be used as secondary units (in parentheses). An exception would be the use of English units as identifiers in trade, such as ``3.5-inch disk drive''.
-\item Avoid combining SI and CGS units, such as current in amperes and magnetic field in oersteds. This often leads to confusion because equations do not balance dimensionally. If you must use mixed units, clearly state the units for each quantity that you use in an equation.
-\item Do not mix complete spellings and abbreviations of units: ``Wb/m\textsuperscript{2}'' or ``webers per square meter'', not ``webers/m\textsuperscript{2}''. Spell out units when they appear in text: ``. . . a few henries'', not ``. . . a few H''.
-\item Use a zero before decimal points: ``0.25'', not ``.25''. Use ``cm\textsuperscript{3}'', not ``cc''.)
+    \item \texttt{business.json}: It contains information about each business,
+    such as name, location (city, state, latitude, longitude), star rating,
+    number of reviews, categories, and various business attributes (e.g.,
+    parking availability, takeout options).
+    \item \texttt{review.json}: It includes full user-written reviews with
+    associated star ratings, review dates, and metadata like the number of ``useful",
+    ``funny", and ``cool" votes each review received.
+    \item \texttt{user.json}: It provides metadata about users including number
+    of reviews written, average star rating, number of fans, compliments received,
+    and a list of friends (as user IDs).
+    \item \texttt{checkin.json}: It records check-in activity on businesses, with
+    timestamp data.
+    \item \texttt{tip.json}: It is similar to reviews but shorter in length,
+    these are quick suggestions or comments written by users for businesses.
 \end{itemize}
 
-\subsection{Equations}
-Number equations consecutively. To make your 
-equations more compact, you may use the solidus (~/~), the exp function, or 
-appropriate exponents. Italicize Roman symbols for quantities and variables, 
-but not Greek symbols. Use a long dash rather than a hyphen for a minus 
-sign. Punctuate equations with commas or periods when they are part of a 
-sentence, as in:
-\begin{equation}
-a+b=\gamma\label{eq}
-\end{equation}
+Each file is stored in JSON format with one object per line. Such files can be
+easily read using pandas by using the \texttt{read\_json} method. The entire data
+is relatively large in size with millions of rows. Further, the data is also
+relational. We can use columns like \texttt{user\_id} and \texttt{business\_id}
+like keys to connect different JSON files.
 
-Be sure that the 
-symbols in your equation have been defined before or immediately following 
-the equation. Use ``\eqref{eq}'', not ``Eq.~\eqref{eq}'' or ``equation \eqref{eq}'', except at 
-the beginning of a sentence: ``Equation \eqref{eq} is . . .''
+Note that the \texttt{review.json} file was too large for us to load in our memory.
+Hence we used a sample of the first 1,000,000 lines from this file and did EDA
+on that.
 
-\subsection{\LaTeX-Specific Advice}
+\section{Exploratory Data Analysis}
 
-Please use ``soft'' (e.g., \verb|\eqref{Eq}|) cross references instead
-of ``hard'' references (e.g., \verb|(1)|). That will make it possible
-to combine sections, add equations, or change the order of figures or
-citations without having to go through the file line by line.
+Some insights that we have gathered using EDA are the following.
 
-Please don't use the \verb|{eqnarray}| equation environment. Use
-\verb|{align}| or \verb|{IEEEeqnarray}| instead. The \verb|{eqnarray}|
-environment leaves unsightly spaces around relation symbols.
+\subsection{Business Data}
 
-Please note that the \verb|{subequations}| environment in {\LaTeX}
-will increment the main equation counter even when there are no
-equation numbers displayed. If you forget that, you might write an
-article in which the equation numbers skip from (17) to (20), causing
-the copy editors to wonder if you've discovered a new method of
-counting.
-
-{\BibTeX} does not work by magic. It doesn't get the bibliographic
-data from thin air but from .bib files. If you use {\BibTeX} to produce a
-bibliography you must send the .bib files. 
-
-{\LaTeX} can't read your mind. If you assign the same label to a
-subsubsection and a table, you might find that Table I has been cross
-referenced as Table IV-B3. 
-
-{\LaTeX} does not have precognitive abilities. If you put a
-\verb|\label| command before the command that updates the counter it's
-supposed to be using, the label will pick up the last counter to be
-cross referenced instead. In particular, a \verb|\label| command
-should not go before the caption of a figure or a table.
-
-Do not use \verb|\nonumber| inside the \verb|{array}| environment. It
-will not stop equation numbers inside \verb|{array}| (there won't be
-any anyway) and it might stop a wanted equation number in the
-surrounding equation.
-
-\subsection{Some Common Mistakes}\label{SCM}
+The \texttt{business.json} file contains metadata more than 150,000 businesses,
+including name, location, rating, and operational status.
 \begin{itemize}
-\item The word ``data'' is plural, not singular.
-\item The subscript for the permeability of vacuum $\mu_{0}$, and other common scientific constants, is zero with subscript formatting, not a lowercase letter ``o''.
-\item In American English, commas, semicolons, periods, question and exclamation marks are located within quotation marks only when a complete thought or name is cited, such as a title or full quotation. When quotation marks are used, instead of a bold or italic typeface, to highlight a word or phrase, punctuation should appear outside of the quotation marks. A parenthetical phrase or statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.)
-\item A graph within a graph is an ``inset'', not an ``insert''. The word alternatively is preferred to the word ``alternately'' (unless you really mean something that alternates).
-\item Do not use the word ``essentially'' to mean ``approximately'' or ``effectively''.
-\item In your paper title, if the words ``that uses'' can accurately replace the word ``using'', capitalize the ``u''; if not, keep using lower-cased.
-\item Be aware of the different meanings of the homophones ``affect'' and ``effect'', ``complement'' and ``compliment'', ``discreet'' and ``discrete'', ``principal'' and ``principle''.
-\item Do not confuse ``imply'' and ``infer''.
-\item The prefix ``non'' is not a word; it should be joined to the word it modifies, usually without a hyphen.
-\item There is no period after the ``et'' in the Latin abbreviation ``et al.''.
-\item The abbreviation ``i.e.'' means ``that is'', and the abbreviation ``e.g.'' means ``for example''.
+    \item \textbf{Geographical Insights:} Most businesses are located in Philadelphia,
+    Pennsylvania, with over 1,400 unique cities and 27 states represented. Latitude
+    and longitude distributions revealed distinct city clusters on the map.
+    \item \textbf{Rating Distribution:} Star ratings are concentrated around 4.0, 
+    and most businesses are still open (about 80\%).
+    \item \textbf{Review Count:} The \texttt{review\_count} column showed an
+    extremely heavy right skew, indicating a few highly-reviewed businesses and
+    a long tail of lesser-reviewed ones.
+    \item \textbf{Missing Values:} The \texttt{attributes} and \texttt{hours}
+    columns had 9\% and 15.5\% missing values respectively, while \texttt{categories}
+    had very few missing entries.
+    \item \textbf{Multivariate Analysis:} Scatterplots and barplots suggested
+    that businesses with more reviews tended to have slightly higher average
+    ratings, but business status (open/closed) did not have a strong influence
+    on average rating.
 \end{itemize}
-An excellent style manual for science writers is \cite{b7}.
 
-\subsection{Authors and Affiliations}\label{AAA}
-\textbf{The class file is designed for, but not limited to, six authors.} A 
-minimum of one author is required for all conference articles. Author names 
-should be listed starting from left to right and then moving down to the 
-next line. This is the author sequence that will be used in future citations 
-and by indexing services. Names should not be listed in columns nor group by 
-affiliation. Please keep your affiliations as succinct as possible (for 
-example, do not differentiate among departments of the same organization).
+\subsection{Check-in Data}
 
-\subsection{Identify the Headings}\label{ITH}
-Headings, or heads, are organizational devices that guide the reader through 
-your paper. There are two types: component heads and text heads.
+The \texttt{checkin.json} file contains timestamped records of customer visits
+to businesses. Each record corresponds to a business and includes a string of
+check-in timestamps.
+\begin{itemize}
+    \item \textbf{Coverage:} Check-in data is available for approximately 38,000
+    unique businesses, indicating a subset of all businesses in the dataset.
+    \item \textbf{Total Check-ins:} By parsing the timestamp strings, we found
+    the total number of check-ins to be approximately 1.9 million.
+    \item \textbf{Data Quality:} The dataset contains no missing values, which
+    makes it reliable for further analysis.
+    \item \textbf{Potential Use:} Check-ins can be used in future work to analyze
+    business popularity trends over time, identify peak business hours, or track
+    seasonal patterns in customer engagement.
+\end{itemize}
 
-Component heads identify the different components of your paper and are not 
-topically subordinate to each other. Examples include Acknowledgments and 
-References and, for these, the correct style to use is ``Heading 5''. Use 
-``figure caption'' for your Figure captions, and ``table head'' for your 
-table title. Run-in heads, such as ``Abstract'', will require you to apply a 
-style (in this case, italic) in addition to the style provided by the drop 
-down menu to differentiate the head from the text.
+\subsection{Tip Data}
 
-Text heads organize the topics on a relational, hierarchical basis. For 
-example, the paper title is the primary text head because all subsequent 
-material relates and elaborates on this one topic. If there are two or more 
-sub-topics, the next level head (uppercase Roman numerals) should be used 
-and, conversely, if there are not at least two sub-topics, then no subheads 
-should be introduced.
+The \texttt{tip.json} file contains short, user-written comments about businesses.
+Unlike reviews, tips are typically brief suggestions or remarks and are often
+written in a more informal style.
+\begin{itemize}
+    \item \textbf{Content and Structure:} Each tip includes a \texttt{user\_id},
+    \texttt{business\_id}, \texttt{text}, \texttt{date}, and a \texttt{compliment\_count},
+    which indicates how many users complimented the tip.
+    \item \textbf{Volume and Activity:} The number of tips steadily increased
+    between 2011 and 2019, with the highest volume in 2012. Monthly tip volume
+    appears to be evenly distributed, indicating consistent usage throughout the year.
+    \item \textbf{User and Business Engagement:} The most active tip givers and
+    the most ``tipped" businesses were identified, showing a similar skew to that
+    of reviews---a small number of users contribute disproportionately.
+    \item \textbf{Compliment Analysis:} The majority of tips received zero
+    compliments, indicating that while tips are useful, they do not attract as
+    much engagement as full reviews.
+\end{itemize}
 
-\subsection{Figures and Tables}\label{FAT}
-\paragraph{Positioning Figures and Tables} Place figures and tables at the top and 
-bottom of columns. Avoid placing them in the middle of columns. Large 
-figures and tables may span across both columns. Figure captions should be 
-below the figures; table heads should appear above the tables. Insert 
-figures and tables after they are cited in the text. Use the abbreviation 
-``Fig.~\ref{fig}'', even at the beginning of a sentence.
+\subsection{User Data}
 
-\begin{table}[htbp]
-\caption{Table Type Styles}
-\begin{center}
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Table}&\multicolumn{3}{|c|}{\textbf{Table Column Head}} \\
-\cline{2-4} 
-\textbf{Head} & \textbf{\textit{Table column subhead}}& \textbf{\textit{Subhead}}& \textbf{\textit{Subhead}} \\
-\hline
-copy& More table copy$^{\mathrm{a}}$& &  \\
-\hline
-\multicolumn{4}{l}{$^{\mathrm{a}}$Sample of a Table footnote.}
-\end{tabular}
-\label{tab1}
-\end{center}
-\end{table}
+The \texttt{user.json} file provides rich metadata about individual Yelp users,
+including review counts, average ratings, compliment types, and friend connections.
+This data is essential for understanding user engagement and behavior on the
+platform.
+\begin{itemize}
+    \item \textbf{User Growth Over Time:} The number of users steadily increased
+    between 2011 and 2018, peaking in 2015. This trend reflects Yelp's growing
+    popularity in that time period.
+    \item \textbf{Review Counts:} The distribution of user review counts is highly
+    right-skewed---most users have written only a few reviews, while a small number
+    of users are extremely active.
+    \item \textbf{Average Ratings:} Users tend to give high ratings, with the
+    distribution of average stars centered around 4.0.
+    \item \textbf{Social Network:} The majority of users have zero friends on the
+    platform. This suggests that while Yelp includes social features, many users
+    interact independently.
+    \item \textbf{Compliment Analysis:} Compliment columns such as \texttt{compliment\_hot},
+    \texttt{compliment\_funny}, and \texttt{compliment\_writer} are all highly
+    correlated, suggesting that active or well-received users tend to be
+    complimented in multiple ways.
+    \item \textbf{Top Users:} We also identified the top-10 most complimented users
+    and broke down their compliment types.
+\end{itemize}
 
+Instructions on how to run our EDA notebook is given in the Appendix, i.e.,
+Section \ref{app:1}.
+
+\section{System Setup}
+
+The provided \texttt{docker-compose.yml} file is used for the Hadoop cluster setup
+and the steps are followed using the \texttt{README.md} file. The main requirements
+are to have Docker and Maven installed on the system, the installation check for
+which can be verified using the two commands:
+\begin{minted}{bash}
+    docker --version
+    # Output: Docker version 27.3.1, build ce12230
+\end{minted}
+\begin{minted}{bash}
+    hadoop version
+    # Output: 3.4.1
+\end{minted}
+Next, the following command starts the local Hadoop cluster inside Docker.
+\begin{minted}{bash}
+    docker compose -f docker-compose.yaml up -d
+\end{minted}
+Also, the NameNode, DataNode, ResourceManager, and NodeManager start in Docker.
+Their creation and verification of whether they are running properly can be seen
+from the screenshot shown in Figure \ref{fig:nodes_verification}.
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=1\textwidth]{graphics/nodes_verification.png}}
+    \caption{Creation of NameNode, DataNode, ResourceManager, and NodeManager.}
+    \label{fig:nodes_verification}
+\end{figure*}
+The Docker desktop application also shows the cluster. Its screenshot is shown
+in Figure \ref{fig:docker_desktop}.
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=1\textwidth]{graphics/docker_desktop.png}}
+    \caption{Creation of NameNode, DataNode, ResourceManager, and NodeManager as
+    shown by the Docker desktop application The green dot indicates that the
+    containers are running properly.}
+    \label{fig:docker_desktop}
+\end{figure*}
+
+Next, to test the system setup, we add a \texttt{README.txt} file which has the
+following content:
+\begin{minted}{bash}
+    For the latest information about Hadoop, please visit our website at:
+        http://hadoop.apache.org/
+    and our wiki, at:
+        https://cwiki.apache.org/confluence/display/HADOOP/
+\end{minted}
+This content is written to the NameNode using the following commands:
+\begin{minted}{bash}
+    docker exec -it project-namenode-1 bash
+    hdfs dfs -mkdir /input
+    hdfs dfs -put README.txt /input/wc.txt
+\end{minted}
+The first command is to get in the NameNode, the second is to create a directory
+in the NameNode, and the third command creates a file \texttt{wc.txt} with the
+content of \texttt{README.txt}.
+
+The creation of the files and directories can be seen on \texttt{http://localhost:9870}.
+The creation of the file can also be verified inside the terminal, as is shown
+in Figure \ref{fig:verification_of_file_creation_in_terminal}.
 \begin{figure}[htbp]
-\centerline{\includegraphics{fig1.png}}
-\caption{Example of a figure caption.}
-\label{fig}
+    \centerline{\includegraphics[width=0.48\textwidth]{graphics/verification_of_file_creation_in_terminal.png}}
+    \caption{File creation shown in the terminal.}
+    \label{fig:verification_of_file_creation_in_terminal}
 \end{figure}
 
-Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
-rather than symbols or abbreviations when writing Figure axis labels to 
-avoid confusing the reader. As an example, write the quantity 
-``Magnetization'', or ``Magnetization, M'', not just ``M''. If including 
-units in the label, present them within parentheses. Do not label axes only 
-with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization 
-\{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of 
-quantities and units. For example, write ``Temperature (K)'', not 
-``Temperature/K''.
+This confirms that the setup is successful and the Hadoop cluster is running.
 
-\section*{Acknowledgment}
+\section{Data Ingestion}
 
-The preferred spelling of the word ``acknowledgment'' in America is without 
-an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
-G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
-acknowledgments in the unnumbered footnote on the first page.
+Now, we will discuss how the Yelp dataset (JSON files) are ingested into the Hadoop
+cluster that was setup in the previous section.
 
-\section*{References}
+\subsection{Hadoop Installation and Verification}
 
-Please number citations consecutively within brackets \cite{b1}. The 
-sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
-number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
-the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
+Before beginning data ingestion, Hadoop was installed and its installation was
+verified using the following command:
+\begin{minted}{bash}
+    hadoop version
+    # Output: 3.4.1
+\end{minted}
+This command checks if Hadoop is correctly installed and configured by displaying
+the installed version details.
 
-Number footnotes separately in superscripts. Place the actual footnote at 
-the bottom of the column in which it was cited. Do not put footnotes in the 
-abstract or reference list. Use letters for table footnotes.
+\subsection{Maven Project Setup}
 
-Unless there are six authors or more give all authors' names; do not use 
-``et al.''. Papers that have not been published, even if they have been 
-submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers 
-that have been accepted for publication should be cited as ``in press'' \cite{b5}. 
-Capitalize only the first word in a paper title, except for proper nouns and 
-element symbols.
+A Maven project was created with the structure shown in Figure \ref{fig:maven_structure}.
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.28\textwidth]{graphics/maven_structure.png}}
+    \caption{Maven project structure.}
+    \label{fig:maven_structure}
+\end{figure}
+The \texttt{pom.xml} file contains the necessary dependencies for Hadoop, Woodstox
+(XML parser), and the Maven Shade Plugin for packaging the project as a JAR file.
+The dependencies include:
+\begin{itemize}
+    \item \texttt{hadoop-common}
+    \item \texttt{hadoop-hdfs}
+    \item \texttt{hadoop-client}
+    \item \texttt{hadoop-mapreduce-client-core}
+    \item \texttt{hadoop-yarn-client}
+    \item \texttt{woodstox-core}
+\end{itemize}
+The content of the \texttt{pom.xml} file is the following:
+\begin{minted}{xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>CSE587Project</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>CSE587Project</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <!-- Hadoop Common -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>3.4.1</version>
+      <!-- Ensure this matches your Hadoop version -->
+    </dependency>
+    <!-- Hadoop HDFS -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <!-- Hadoop Client -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-client</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <!-- Woodstox Core (StAX XML parser) -->
+    <dependency>
+      <groupId>com.fasterxml.woodstox</groupId>
+      <artifactId>woodstox-core</artifactId>
+      <version>6.4.0</version>
+    </dependency>
+    <!-- Hadoop MapReduce Client (if needed) -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-mapreduce-client-core</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <!-- Hadoop Yarn Client (if needed) -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-yarn-client</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-hdfs-client</artifactId>
+      <version>3.4.1</version>
+      <!-- Ensure it matches your Hadoop version -->
+    </dependency>
+    <!-- Hadoop Client API -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-client-api</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+    <!-- Hadoop Client Runtime -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-client-runtime</artifactId>
+      <version>3.4.1</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+\end{minted}
 
-For papers published in translation journals, please give the English 
-citation first, followed by the original foreign-language citation \cite{b6}.
+\subsection{Java Script for HDFS Upload}
 
-\begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\bibitem{b8} D. P. Kingma and M. Welling, ``Auto-encoding variational Bayes,'' 2013, arXiv:1312.6114. [Online]. Available: https://arxiv.org/abs/1312.6114
-\bibitem{b9} S. Liu, ``Wi-Fi Energy Detection Testbed (12MTC),'' 2023, gitHub repository. [Online]. Available: https://github.com/liustone99/Wi-Fi-Energy-Detection-Testbed-12MTC
-\bibitem{b10} ``Treatment episode data set: discharges (TEDS-D): concatenated, 2006 to 2009.'' U.S. Department of Health and Human Services, Substance Abuse and Mental Health Services Administration, Office of Applied Studies, August, 2013, DOI:10.3886/ICPSR30122.v2
-\bibitem{b11} K. Eves and J. Valasek, ``Adaptive control for singularly perturbed systems examples,'' Code Ocean, Aug. 2023. [Online]. Available: https://codeocean.com/capsule/4989235/tree
-\end{thebibliography}
+The \texttt{HDFSUploader.java} script uploads the local Yelp JSON files to HDFS.
+The script does the following:
+\begin{enumerate}
+    \item Establishes a connection to HDFS.
+    \item Ensures that the destination directory exists.
+    \item Iterates over the local dataset directory to find the JSON files.
+    \item Checks the existence of the file to avoid redundancy.
+    \item Copies the JSON files to HDFS.
+\end{enumerate}
+The content of the \texttt{HDFSUploader.java} is the following:
+\begin{minted}{java}
+package com.example;
 
-\vspace{12pt}
-\color{red}
-IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileStatus;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+
+public class HDFSUploader {
+    public static void main(String[] args) {
+        // Local directory containing Yelp JSON files
+        //String localDir = "/Users/omnankar/Documents/Spring sem/CSE 587/CSE587project/Yelp JSON/yelp_dataset/";
+        String localDir = "/tmp/yelp_dataset/";
+        String hdfsDestination = "/yelp_dataset/";
+
+        try {
+            // Load Hadoop Configuration
+            Configuration conf = new Configuration();
+            conf.set("fs.defaultFS", "hdfs://namenode:8020"); // Or use the actual Namenode IP
+            conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
+            conf.set("fs.file.impl", "org.apache.hadoop.fs.LocalFileSystem");
+
+            // Initialize HDFS FileSystem
+            FileSystem fs = FileSystem.get(new URI("hdfs://namenode:8020"), conf);
+
+            // Ensure destination directory exists
+            Path hdfsDestPath = new Path(hdfsDestination);
+            if (!fs.exists(hdfsDestPath)) {
+                fs.mkdirs(hdfsDestPath);
+                System.out.println("Created HDFS directory: " + hdfsDestination);
+            }
+
+            // Get list of files to upload
+            File folder = new File(localDir);
+            File[] listOfFiles = folder.listFiles((dir, name) - > name.endsWith(".json"));
+
+            if (listOfFiles == null || listOfFiles.length == 0) {
+                System.out.println("No JSON files found in local directory: " + localDir);
+                return;
+            }
+
+            // Upload each file
+            for (File file: listOfFiles) {
+                Path srcPath = new Path(file.getAbsolutePath());
+                Path destPath = new Path(hdfsDestination + file.getName());
+
+                // Check if file already exists in HDFS
+                if (fs.exists(destPath)) {
+                    System.out.println("Skipping (already exists): " + file.getName());
+                    continue;
+                }
+
+                // Upload file
+                fs.copyFromLocalFile(srcPath, destPath);
+                System.out.println("Uploaded: " + file.getName());
+            }
+
+            fs.close();
+            System.out.println("All files uploaded successfully!");
+
+        } catch (Exception e) {
+            System.err.println("Error uploading files to HDFS: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
+\end{minted}
+
+\subsection{Execution Steps}
+
+\subsubsection{Copy Yelp Dataset To NameNode Container}
+
+\begin{minted}{bash}
+docker cp "/local/path/to/yelp_dataset" cse587project-namenode-1:/tmp/yelp_dataset
+\end{minted}
+This copies the dataset from the local system into the Docker container where the
+NameNode is running.
+
+\subsubsection{Build the Maven Project}
+
+\begin{minted}{bash}
+mvn clean package
+\end{minted}
+This compiles the Java code and packages it as a JAR file. The JAR file
+(\texttt{CSE587Project-1.0-SNAPSHOT.jar}) contains the compiled Java code for
+the script which was run. It is responsible for uploading Yelp dataset JSON
+files to HDFS.
+
+\subsubsection{Copy JAR File to NameNode Container}
+
+\begin{minted}{bash}
+docker cp target/CSE587Project-1.0-SNAPSHOT.jar cse587project-namenode-1:/tmp/
+\end{minted}
+This is shown in Figure \ref{fig:successfully_copied}.
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=1\textwidth]{graphics/successfully_copied.png}}
+    \caption{Copying JAR file to NameNode container.}
+    \label{fig:successfully_copied}
+\end{figure*}
+This moves the compiled JAR file into the NameNode container for execution.
+
+\subsubsection{Run HDFSUploader Inside NameNode Container}
+
+\begin{minted}{bash}
+docker exec -it cse587project-namenode-1 bash -c 'java -cp /tmp/CSE587Project-1.0-SNAPSHOT.jar com.example.HDFSUploader'
+\end{minted}
+This is shown in Figure \ref{fig:successfully_copied_9_29}.
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=1\textwidth]{graphics/successfully_copied_9_29.png}}
+    \caption{Running HDFSUploader inside NameNode Container.}
+    \label{fig:successfully_copied_9_29}
+\end{figure*}
+This executes the \texttt{HDFSUploader} Java program inside the Hadoop container
+to upload data to HDFS.
+
+\subsubsection{Verify Uploaded Files}
+
+\begin{minted}{bash}
+docker exec -it cse587project-namenode-1 bash -c 'hdfs dfs -ls /yelp_dataset'
+\end{minted}
+This is shown in Figure \ref{fig:verify_uploaded_files}.
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=1\textwidth]{graphics/verify_uploaded_files.png}}
+    \caption{Verification of uploaded files.}
+    \label{fig:verify_uploaded_files}
+\end{figure*}
+
+\subsection{Web Interface Verification}
+
+The uploaded files were also verified using the Hadoop NameNode Web UI at
+\texttt{http://localhost:9870}, where the \texttt{yelp\_dataset} directory and
+its JSON files are visible. This is shown in Figures \ref{fig:root_dir} and
+\ref{fig:yelp_dataset_dir}.
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.48\textwidth]{graphics/root_dir.png}}
+    \caption{Web interface verification of the root directory.}
+    \label{fig:root_dir}
+\end{figure}
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=0.48\textwidth]{graphics/yelp_dataset_dir.png}}
+    \caption{Web interface verification of the \texttt{yelp\_dataset} directory.}
+    \label{fig:yelp_dataset_dir}
+\end{figure}
+
+Another check is to read a few lines from the uploaded data. The first 5 lines
+of the \texttt{business.json} file are read using the following command:
+\begin{minted}{bash}
+docker exec -it cse587project-namenode-1 bash -c 'hdfs dfs -cat /yelp_dataset/yelp_academic_dataset_business.json | head -n 5'
+\end{minted}
+Figure \ref{fig:verify_by_printing} shows the output.
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=1\textwidth]{graphics/verify_by_printing.png}}
+    \caption{Verification by printing the first 5 lines of the \texttt{business.json}
+    file.}
+    \label{fig:verify_by_printing}
+\end{figure*}
+
+\subsection{Discussion on Data Ingestion Methods}
+
+\subsubsection{Is \texttt{hdfs dfs -put} a good way to write files to an HDFS
+cluster?}
+
+Writing with \texttt{hdfs dfs -put} is a good way to write files into an HDFS
+cluster for small- to medium-sized files and one time or spaced uploads. It is
+simple, well-proven, and requires less commands. But if massive data ingestion
+or bulk uploading is required, as in the case of uploading the Yelp dataset
+(more than 9 GB) it may not be ideal due to its single-threaded approach and lack
+of advanced features like compression or multi-threaded uploading.
+
+\subsubsection{How to improve \texttt{hdfs dfs -put} speed?}
+
+The speed on \texttt{hdfs dfs -put} while writing \texttt{README.txt} file to
+input directory was satisfactory and quick but for data ingestion it will be very
+slow. Some ways of improving it include:
+\begin{itemize}
+    \item Use the \texttt{-p} parameter for parallel copying.
+    \item Increase the replication factor temporarily during upload (default is 3).
+    \item Implement a custom solution using the HDFS API for parallel uploads.
+\end{itemize}
+
+\subsubsection{Best Data Formats for HDFS Storage}
+
+Some formats to store data in HDFS for easy analysis afterwards are:
+\begin{itemize}
+    \item \textit{Parquet:} Columnar storage file format that uses effective
+    compression and encoding schemes, often used when Excel or CSV file reach
+    their row limit.
+    \item \textit{JSON:} For semi-structured data, especially when human readability
+    is essential.
+\end{itemize}
+
+The choice of format primarily depends on the specific analysis needs, query patterns,
+and the tools which will be used to analyze the data.
+
+\section{Machine Learning Problem Statements}
+
+Based on our exploration of the Yelp Open Dataset, we came up with three machine
+learning problems that not only fit well with the data but also address real-world
+use cases. These problems aim to improve user experience and enhance the
+trustworthiness of the platform.
+
+\subsection{Sentiment Analysis of User Reviews}
+
+The goal here is to predict the sentiment of a review---whether it is positive,
+neutral, or negative---based on the review text. While the dataset already includes
+star ratings, this task helps extract deeper insight from the actual text users
+write. Sometimes, the sentiment expressed in the review does not match the star
+rating, so this can give businesses a clearer picture of how customers feel. This
+is a classic text classification problem that can be solved using supervised
+learning, where the review text is used as input and the rating (or derived
+sentiment label) is the target.
+
+\subsection{Business Recommendation System}
+
+We aim to build a recommendation system that suggests businesses to users based
+on their past activity---mainly the reviews they have written and the ratings
+they have given. This could help users discover new places they have likely to
+enjoy, making the platform more useful and personalized. We can approach this
+using collaborative filtering (based on user-item interactions), content-based
+filtering (using business attributes), or a hybrid of both.
+
+\subsection{Detecting Fake or Spam Reviews}
+
+Another problem we identified is the detection of fake or suspicious reviews.
+Some reviews may be overly positive or negative in a way that does not align with
+a user's history or the overall business reputation. Spotting these can improve
+the credibility of the platform and help users trust the information they see.
+This can be treated as an anomaly detection or binary classification problem,
+depending on how we define and label fake reviews. We can use features like review
+text, timing, voting patterns, and user behavior to train a model that flags
+potentially fake reviews.
+
+\section{Data Analysis Objectives}
+
+We have also defined five key objectives that will guide our deeper exploration of
+the Yelp Open Dataset. These objectives are designed to help us uncover trends,
+patterns, and relationships that can add value to both users and businesses on
+the platform. The insights gained from these analyses will also help support
+and validate our proposed machine learning tasks.
+
+\subsection{User Trend Analysis}
+
+We plan to study how the user base on Yelp has grown and evolved over time. By
+analyzing the \texttt{yelping\_since} field in the \texttt{user.json} file, we
+will track the number of new users joining the platform each year. This will help
+us identify growth patterns and understand how user engagement has shifted across
+different time periods.
+
+\subsection{Business Category Performance}
+
+We aim to evaluate how different categories of businesses perform in terms of
+user engagement and satisfaction. Using data from \texttt{business.json}, including
+the \texttt{categories}, \texttt{review\_count}, and \texttt{stars} fields, we
+will identify the most reviewed categories and compare their average ratings.
+This analysis will help us understand which types of businesses tend to attract
+more user attention and how they are perceived by customers.
+
+\subsection{User Engagement Patterns}
+
+Another key objective is to investigate how frequently users contribute to the
+platform and how that engagement influences their perceived credibility. We will
+analyze \texttt{review\_count}, \texttt{average\_stars}, and compliment-related
+metrics from the \texttt{user.json} file, alongside voting patterns from
+\texttt{review.json}. This will allow us to distinguish between casual and highly
+active users and assess their influence within the community.
+
+\subsection{Geographic Distribution of Businesses}
+
+We also plan to explore the geographic distribution of Yelp activity. By visualizing
+the latitude and longitude coordinates in the \texttt{business.json} file, we
+will identify which cities or regions have the highest concentration of reviewed
+businesses. This spatial analysis will give us a clearer picture of Yelp's reach
+and user engagement across different locations.
+
+\subsection{Relationship Between Review Length and Rating}
+
+Finally, we want to examine whether there is a connection between the length of
+a review and the sentiment it conveys. In this analysis, we will compare the
+character count of reviews (\texttt{text} field) with the corresponding star
+ratings from the \texttt{review.json} file. This will help us understand if longer
+reviews tend to reflect stronger opinions—either positive or negative—which can
+be useful for both sentiment analysis and review quality assessment.
+
+\section*{Appendix: Running the EDA Notebook}\label{app:1}
+
+We have created an Anaconda environment for EDA. The \texttt{environment.yml} file
+for our environment is provided in our submission. Please follow these steps to
+run our EDA notebook:
+\begin{enumerate}
+    \item Using Anaconda prompt, navigate into the root directory (i.e., the
+    directory you get after unzipping our submission).
+    \item Create an environment using our \texttt{environment.yml} file by running
+    the following commands in the Anaconda prompt:
+    \begin{minted}{bash}
+        conda create -p ./venv --file environment.yml
+    \end{minted}
+    \item The environment will be created in this root directory, inside the
+    folder \texttt{venv}. Once this is done, activate this environment by running
+    the following command:
+    \begin{minted}{bash}
+        conda activate ./venv
+    \end{minted}
+    \item Now, run the following command to open a Jupyter notebook server:
+    \begin{minted}{bash}
+    jupyter notebook
+    \end{minted}
+    Once this server opens, you can click on our submitted EDA notebook to open
+    it.
+\end{enumerate}
 
 \end{document}
